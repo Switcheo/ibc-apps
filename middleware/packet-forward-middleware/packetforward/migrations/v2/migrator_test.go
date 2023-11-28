@@ -15,7 +15,7 @@ import (
 )
 
 // 0.02
-var migrateExpected = sdk.NewDecWithPrec(2, 2)
+var migrateExpected = sdkmath.LegacyNewDecWithPrec(2, 2)
 
 type mockSubspace struct {
 	ps types.Params

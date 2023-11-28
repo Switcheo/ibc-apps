@@ -6,11 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/armon/go-metrics"
 	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
+	"github.com/hashicorp/go-metrics"
 
 	errorsmod "cosmossdk.io/errors"
 
+	sdkmath "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -18,7 +19,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -147,7 +148,7 @@ func (k *Keeper) WriteAcknowledgementForForwardedPacket(
 			// - move to the other escrow account, in the case of native denom
 			// - burn
 
-			amount, ok := sdk.NewIntFromString(data.Amount)
+			amount, ok := sdkmath.NewIntFromString(data.Amount)
 			if !ok {
 				return fmt.Errorf("failed to parse amount from packet data for forward refund: %s", data.Amount)
 			}
@@ -225,7 +226,7 @@ func (k *Keeper) ForwardTransferPacket(
 	nonrefundable bool,
 ) error {
 	var err error
-	feeAmount := sdk.NewDecFromInt(token.Amount).Mul(k.GetFeePercentage(ctx)).RoundInt()
+	feeAmount := sdkmath.LegacyNewDecFromInt(token.Amount).Mul(k.GetFeePercentage(ctx)).RoundInt()
 	packetAmount := token.Amount.Sub(feeAmount)
 	feeCoins := sdk.Coins{sdk.NewCoin(token.Denom, feeAmount)}
 	packetCoin := sdk.NewCoin(token.Denom, packetAmount)
@@ -390,7 +391,7 @@ func (k *Keeper) RetryTimeout(
 		}
 	}
 
-	amount, ok := sdk.NewIntFromString(data.Amount)
+	amount, ok := sdkmath.NewIntFromString(data.Amount)
 	if !ok {
 		k.Logger(ctx).Error("packetForwardMiddleware error parsing amount from string for packetforward retry on timeout",
 			"original-sender-address", inFlightPacket.OriginalSenderAddress,

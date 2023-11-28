@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	cosmosproto "github.com/cosmos/gogoproto/proto"
 	"github.com/docker/docker/client"
 	"github.com/strangelove-ventures/interchaintest/v7"
@@ -113,7 +113,7 @@ func CosmosChainUpgradeTest(t *testing.T, chainName, upgradeRepo, upgradeDockerT
 	err = json.Unmarshal(stdout, &params)
 	require.NoError(t, err, "error unmarshalling pfm params")
 	t.Logf("params: %+v", params)
-	require.Equal(t, sdk.NewDec(0), params.FeePercentage, "fee percentage not equal to expected value")
+	require.Equal(t, sdkmath.LegacyNewDec(0), params.FeePercentage, "fee percentage not equal to expected value")
 
 }
 

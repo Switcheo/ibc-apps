@@ -5,6 +5,7 @@
 package mock
 
 import (
+	"context"
 	reflect "reflect"
 
 	types "github.com/cosmos/cosmos-sdk/types"
@@ -35,7 +36,7 @@ func (m *MockDistributionKeeper) EXPECT() *MockDistributionKeeperMockRecorder {
 }
 
 // FundCommunityPool mocks base method.
-func (m *MockDistributionKeeper) FundCommunityPool(arg0 types.Context, arg1 types.Coins, arg2 types.AccAddress) error {
+func (m *MockDistributionKeeper) FundCommunityPool(arg0 context.Context, arg1 types.Coins, arg2 types.AccAddress) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FundCommunityPool", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
