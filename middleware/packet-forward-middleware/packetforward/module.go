@@ -32,6 +32,12 @@ var (
 // AppModuleBasic is the packetforward AppModuleBasic
 type AppModuleBasic struct{}
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am AppModule) IsAppModule() {}
+
 // Name implements AppModuleBasic interface
 func (AppModuleBasic) Name() string {
 	return types.ModuleName
