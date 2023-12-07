@@ -11,19 +11,20 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
+	"cosmossdk.io/store"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	tmdb "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
+	storemetrics "cosmossdk.io/store/metrics"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cosmosdb "github.com/cosmos/cosmos-db"
 
-	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 )
 
 func NewTestSetup(t *testing.T, ctl *gomock.Controller) *Setup {
@@ -87,7 +88,7 @@ type testMocks struct {
 }
 
 type initializer struct {
-	DB         *tmdb.MemDB
+	DB         *cosmosdb.MemDB
 	StateStore store.CommitMultiStore
 	Ctx        sdk.Context
 	Marshaler  codec.Codec
@@ -96,11 +97,11 @@ type initializer struct {
 
 // Create an initializer with in memory database and default codecs
 func newInitializer() initializer {
-	logger := log.TestingLogger()
+	logger := log.NewNopLogger()
 	logger.Debug("initializing test setup")
 
-	db := tmdb.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db)
+	db := cosmosdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db, logger, storemetrics.NewNoOpMetrics())
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, logger)
 	interfaceRegistry := cdctypes.NewInterfaceRegistry()
@@ -117,8 +118,8 @@ func newInitializer() initializer {
 }
 
 func (i initializer) paramsKeeper() paramskeeper.Keeper {
-	storeKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-	transientStoreKey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	storeKey := storetypes.NewKVStoreKey(paramstypes.StoreKey)
+	transientStoreKey := storetypes.NewTransientStoreKey(paramstypes.TStoreKey)
 	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
 	i.StateStore.MountStoreWithDB(transientStoreKey, storetypes.StoreTypeTransient, i.DB)
 
@@ -135,7 +136,7 @@ func (i initializer) packetforwardKeeper(
 	bankKeeper types.BankKeeper,
 	ics4Wrapper porttypes.ICS4Wrapper,
 ) *keeper.Keeper {
-	storeKey := sdk.NewKVStoreKey(types.StoreKey)
+	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
 
 	govModuleAddress := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"

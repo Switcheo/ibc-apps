@@ -12,10 +12,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
 
 var (
@@ -312,7 +313,7 @@ func TestOnRecvPacket_ForwardAmountInt256(t *testing.T) {
 	denom := makeIBCDenom(testDestinationPort, testDestinationChannel, testDenom)
 	senderAccAddr := test.AccAddress()
 
-	amount256, ok := sdk.NewIntFromString(testAmount256)
+	amount256, ok := sdkmath.NewIntFromString(testAmount256)
 	require.True(t, ok)
 
 	testCoin := sdk.NewCoin(denom, amount256)
@@ -371,7 +372,7 @@ func TestOnRecvPacket_ForwardWithFee(t *testing.T) {
 	forwardMiddleware := setup.ForwardMiddleware
 
 	// Set fee param to 10%
-	if err := setup.Keepers.PacketForwardKeeper.SetParams(ctx, types.NewParams(sdk.NewDecWithPrec(10, 2))); err != nil {
+	if err := setup.Keepers.PacketForwardKeeper.SetParams(ctx, types.NewParams(sdkmath.LegacyNewDecWithPrec(10, 2))); err != nil {
 		t.Fatal(err)
 	}
 

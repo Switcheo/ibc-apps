@@ -4,10 +4,10 @@ go 1.20
 
 require (
 	cosmossdk.io/math v1.1.2
-	github.com/cosmos/cosmos-sdk v0.47.5
+	github.com/cosmos/cosmos-sdk v0.50.1
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.0.0-00000000000000-000000000000
-	github.com/cosmos/ibc-go/v7 v7.3.1
+	github.com/cosmos/ibc-go/v8 v8.0.0
 	github.com/docker/docker v24.0.5+incompatible
 	github.com/strangelove-ventures/interchaintest/v7 v7.0.0-20231025031208-463fdf2292e8
 	github.com/stretchr/testify v1.8.4
